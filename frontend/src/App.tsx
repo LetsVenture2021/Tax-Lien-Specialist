@@ -10,7 +10,7 @@ export default function App(): JSX.Element {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      {ReasoningExplorerRoutes()}
+      <ReasoningExplorerRoutes />
       {/* TODO: add nested routes for auth, investors, properties, liens, analysis, portfolios, documents, notifications */}
     </Routes>
   );
