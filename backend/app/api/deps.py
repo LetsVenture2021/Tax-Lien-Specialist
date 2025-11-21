@@ -29,4 +29,4 @@ async def get_openai_service() -> AsyncGenerator[OpenAIService, None]:
     try:
         yield service
     finally:
-        await client.aclose()
+        await client.close()

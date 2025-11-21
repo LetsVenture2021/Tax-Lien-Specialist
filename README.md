@@ -38,6 +38,28 @@ docker-compose.yml    Local development orchestrator
 - Async SQLAlchemy session management available through `backend/app/db/session.py` and exposed as a FastAPI dependency in `backend/app/api/deps.py`.
 - Celery worker configured in `backend/app/worker.py` with Redis broker/result backend.
 
+### AI API Endpoints
+
+- `backend/app/ai/openai_service.py` encapsulates the `AsyncOpenAI` client for responses and embeddings.
+- FastAPI routes under `backend/app/api/v1/ai.py` expose:
+  - `POST /api/v1/ai/responses` – lightweight wrapper around the Responses API for text generation.
+  - `POST /api/v1/ai/embeddings` – embeds batches of text using the configured embedding model.
+- Environment expectations (all configurable via `.env`):
+  - `OPENAI_API_KEY` – project API key (required for the routes to be available).
+  - `OPENAI_MODEL_NAME` – completion model (defaults to `gpt-5.1`).
+  - `OPENAI_EMBEDDING_MODEL` – embedding model (`text-embedding-3-large` by default).
+- When running locally you can validate the endpoints by starting the API and issuing:
+
+  ```bash
+  curl http://localhost:8000/health
+  curl -X POST http://localhost:8000/api/v1/ai/responses \
+       -H "Content-Type: application/json" \
+       -d '{"prompt":"Summarize lien workflow."}'
+  curl -X POST http://localhost:8000/api/v1/ai/embeddings \
+       -H "Content-Type: application/json" \
+       -d '{"texts":["Sample lien note","Secondary note"]}'
+  ```
+
 The domain routers (`backend/app/api/v1`) and feature packages (`models`, `schemas`, `services`, `jobs`, `ai`) are ready for implementation guided by the specs in `docs/`.
 
 ## Frontend Application
