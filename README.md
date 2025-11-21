@@ -1,181 +1,86 @@
 # Tax Lien Strategist – AGI-Enhanced Investment & Reasoning Platform
 
-## 🚀 Overview
+## Overview
 
-The **Tax Lien Strategist** is a full-stack, agentic, AI-powered investment analysis platform designed to acquire, analyze, and manage tax lien assets with precision. It combines:
+Tax Lien Strategist is a full-stack, agent-assisted investment analysis platform focused on sourcing, evaluating, and managing tax lien assets. The system combines a FastAPI service, a React/Vite front end, orchestration agents, and background workers to deliver an explainable workflow for acquisition through portfolio management.
 
-- **FastAPI backend** with modular domain services
-- **React/TypeScript frontend** with Reasoning Explorer developer tooling
-- **LLM-driven AGI agents** (Orchestrator, Research, Underwriting, Document)
-- **End-to-end workflow automation** for lien ingestion → analysis → underwriting → portfolio selection
-- **Deep observability** into agent reasoning, decisions, and tool calls via the Reasoning Explorer
-- **Azure or GCP cloud deployment stacks** for scalable production operation
+## Current Highlights
 
-This README is a high-level operational guide to the system architecture, development environment, and core workflows.
+- FastAPI backend wired through an application factory, shared logging, environment-driven settings, and an async SQLAlchemy session helper.
+- Celery worker process configured for Redis-backed task execution with an initial health check task.
+- React/Vite front end bootstrapped with React Router and React Query; the Reasoning Explorer route is stubbed for future tooling work.
+- Docker Compose stack providing backend, worker, frontend, PostgreSQL, and Redis services driven from `.env.example` values.
+- Documentation suite centralized under `docs/`, with `docs/implementation_index.md` tracking progress against the specifications.
 
----
-
-## 🧠 Core Capabilities
-
-### 1. Agentic Workflow Automation
-
-- Multi-step workflows executed by the **Orchestrator Agent**
-- Domain intelligence powered by **Research** and **Underwriting Agents**
-- Document generation through the **Document Agent** with redacted LLM prompts/responses
-
-### 2. Reasoning Explorer (Developer & Compliance Tools)
-
-A complete introspection UI for:
-
-- Agent episodes
-- LLM calls (with redaction policies applied)
-- Decisions and tool calls
-- Memory snapshots & entity context
-
-### 3. Analytical & Data Science Extensions
-
-- Star schema for warehouse analytics
-- Materialized views for deal aggregation & yield performance
-- Time-series forecasting models for lien pipelines
-
----
-
-## 🏗️ System Architecture Summary
-
-### Backend
-
-- **FastAPI** application with modular route groups
-- Domain layers: Properties, Liens, Investors, Portfolios, Analysis, Agents
-- Background jobs: ingestion, valuation refresh, NAV updates, log cleanup
-- Postgres + `pgvector` for structured + semantic AI memory
-- Redis for queueing, caching, and scheduled jobs
-
-### Frontend
-
-- **React + Vite + TypeScript**
-- Feature-oriented folder structure
-- Reasoning Explorer UI
-- Admin tools for debugging and compliance
-
-### Agents & AGI Layer
-
-- GPT-5.1 (OpenAI)
-- HuggingFace models for redaction, classification, and summarization
-- Embedded memory vectors and episode tracing
-
-### Deployment Targets
-
-**Azure stack** includes:
-
-- App Service or AKS
-- Postgres Flexible Server
-- Redis Cache
-- Blob Storage
-
-**GCP stack** includes:
-
-- Cloud Run or GKE
-- Cloud SQL (Postgres)
-- Memorystore
-- Cloud Storage
-
----
-
-## 📁 Repository Structure (High-Level)
+## Repository Layout
 
 ```text
-/infra                 # IaC for Azure or GCP
-/backend               # FastAPI source
-  /app
-    /api
-    /core
-    /models
-    /schemas
-    /services
-    /ai
-    /jobs
-/frontend              # React/Vite source
-  /src
-    /features
-    /components
-    /config
-/docs                  # All specifications + architecture docs
-/tests                 # Backend + frontend tests
-/scripts               # Seeders, migrations, utilities
+backend/              FastAPI application source and worker entry point
+  app/
+    api/              API routers and dependencies
+    core/             Settings and logging configuration
+    db/               Database engine and session helpers
+    ai/, jobs/, models/, repositories/, schemas/, services/
+frontend/             React application (Vite, TypeScript)
+infra/                Infrastructure-as-code placeholders
+scripts/              Utility scripts (seeders, automation stubs)
+tests/                Backend and frontend tests (planned)
+docs/                 Functional, architectural, and implementation specifications
+docker-compose.yml    Local development orchestrator
+.env.example          Shared environment variable defaults
 ```
 
----
+## Backend Service
 
-## 🔌 API Specification
+- Entry point defined in `backend/app/main.py` with CORS support and a `/health` endpoint.
+- Global settings supplied via `backend/app/core/config.py` using Pydantic settings tied to `.env` files.
+- Structured logging handled by `backend/app/core/logging.py`, integrating Python logging with structlog.
+- Async SQLAlchemy session management available through `backend/app/db/session.py` and exposed as a FastAPI dependency in `backend/app/api/deps.py`.
+- Celery worker configured in `backend/app/worker.py` with Redis broker/result backend.
 
-Full HTTP API contracts are available in `docs/backend_api_specification.md`. Includes endpoint definitions for:
+The domain routers (`backend/app/api/v1`) and feature packages (`models`, `schemas`, `services`, `jobs`, `ai`) are ready for implementation guided by the specs in `docs/`.
 
-- Auth
-- Investors
-- Properties
-- Liens
-- Analysis Runs
-- Portfolios
-- Documents
-- Agents
-- Reasoning Explorer
+## Frontend Application
 
----
+- Bootstrapped with Vite, React 18, TypeScript, React Router, and React Query.
+- `frontend/src/main.tsx` configures the React Query client and BrowserRouter.
+- `frontend/src/App.tsx` defines the initial routing shell and integrates the Reasoning Explorer stub from `frontend/src/features/reasoning-explorer`.
+- Tailwind CSS tooling is available via dev dependencies; styling scaffold will follow during feature build-out.
 
-## 📜 Business Rules & Domain Logic
+## Documentation Map
 
-Rules for lien eligibility, redemption windows, investor constraints, deal scoring & LTV/yield computation, and valid status transitions are defined in `docs/business_rules_and_validation_spec.md`.
+- `docs/implementation_index.md` – execution tracker linking requirements to implementation.
+- `docs/backend_api_specification.md` – HTTP resource contracts for all planned endpoints.
+- `docs/business_rules_and_validation_spec.md` – eligibility, underwriting, and workflow rules.
+- `docs/data_model_tax_lien_strategist.md` – relational schema and entity relationships.
+- `docs/background_jobs_and_scheduling.md` – schedule outlines for Celery tasks.
+- `docs/agent_protocol_and_tools.md` – agent roles, tool interfaces, and prompt conventions.
+- Additional design deep dives cover the AGI layer, Reasoning Explorer UI/UX, deployment stacks, and system diagrams.
 
----
+Refer to `docs/tax_lien_strategist_readme.md` for the original concept brief and `docs/updated_readme.md` for historical context.
 
-## 🔧 Agents & Tool Protocols
+## Local Development
 
-Structured JSON schemas for agent input/output and tool calls live in `docs/agent_protocol_and_tools.md`.
+1. Copy `.env.example` to `.env` and adjust secrets as needed.
+2. Launch the full stack with Docker:
 
-Agents:
+   ```bash
+   docker compose up --build
+   ```
 
-- Orchestrator
-- Research
-- Underwriting
-- Document
+3. The API is available at `http://localhost:8000`, and the web client runs at `http://localhost:5173`.
 
-Tools include:
+### Running Services Without Docker
 
-- `fetch_county_liens`
-- `fetch_property_details`
-- `compute_lien_metrics`
-- `generate_document_from_template`
-- `log_decision_event`
-
----
-
-## 🧩 Background Jobs & Schedules
-
-Defined in `docs/background_jobs_and_scheduling.md`. Covers ingestion, valuation refresh, NAV updates, document generation, reasoning archival, and more.
-
----
-
-## ⚙️ Local Development
-
-### Requirements
-
-- Python 3.11+
-- Node 18+
-- Docker / Docker Compose
-
-### Start Full Stack
+Backend (requires Poetry):
 
 ```bash
-docker compose up --build
+cd backend
+poetry install
+poetry run uvicorn app.main:create_app --factory --reload
 ```
 
-### Run Backend Tests
-
-```bash
-pytest
-```
-
-### Run Frontend
+Frontend:
 
 ```bash
 cd frontend
@@ -183,49 +88,16 @@ npm install
 npm run dev
 ```
 
----
+### Tests
 
-## 🚀 Deployment
+Automated test scaffolding will live under `tests/`. Pytest and frontend testing tools are already listed in the respective dependency manifests and will be wired in future iterations.
 
-Deployment instructions for Azure and GCP are documented in:
+## Deployment References
 
-- `docs/azure_stack_and_deployment_plan_tax_lien_strategist.md`
-- `docs/gcp_stack_and_deployment_plan_tax_lien_strategist.md`
+- Azure guidance: `docs/azure_stack_and_deployment_plan_tax_lien_strategist.md`
+- GCP guidance: `docs/gcp_stack_and_deployment_plan_tax_lien_strategist.md`
+- Infrastructure patterns and final target layout: `docs/final_repo_structure_and_codex_prompt_FULL.md` and `docs/implementation_artifacts_tax_lien_strategist.md`
 
-CI/CD pipelines are defined in `docs/ci_cd_pipeline_specification.md`.
+## Contact
 
----
-
-## 🧪 Seed Data & Fixtures
-
-Seed data references live in `docs/seed_data_and_test_fixtures.md` and are used for spinning up a fresh dev environment.
-
----
-
-## 🔍 Observability
-
-Guidelines are in `docs/logging_monitoring_and_slos.md`. Includes structured logging fields, required metrics, SLO definitions, and alert rules.
-
----
-
-## 🆘 Runbooks & Incident Response
-
-Found in `docs/incident_response_runbooks.md`. Covers LLM outages, DB hotspots, ingestion failures, and worker queues.
-
----
-
-## 🧭 Vision
-
-The platform serves as a fully agentic, explainable AI system for tax lien investment. It blends operational automation, financial analysis, and AGI-driven reasoning while maintaining transparency, safety, and regulatory compliance.
-
----
-
-## 📄 License
-
-Proprietary – All rights reserved.
-
----
-
-## 📬 Contact
-
-For support or questions, contact **Pryceless Ventures LLC**.
+Pryceless Ventures LLC
