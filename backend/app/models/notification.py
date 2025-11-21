@@ -53,7 +53,7 @@ class Notification(BaseModel):
     )
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
-    metadata: Mapped[Optional[dict]] = mapped_column(JSONB)
+    metadata_json: Mapped[Optional[dict]] = mapped_column("metadata", JSONB)
     is_read: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default="CURRENT_TIMESTAMP")
     read_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
