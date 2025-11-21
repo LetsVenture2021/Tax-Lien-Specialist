@@ -36,6 +36,10 @@ httpx = {extras = ["http2"], version = "^0.27.0"}
 ruff = "^0.4.2"
 mypy = "^1.9.0"
 
+[tool.pytest.ini_options]
+pythonpath = ["app"]
+testpaths = ["../tests/backend"]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
