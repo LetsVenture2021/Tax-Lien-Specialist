@@ -86,6 +86,7 @@ class PropertyValuation(BaseModel):
     high_value: Mapped[Optional[Decimal]] = mapped_column(Numeric(18, 2))
     valuation_source: Mapped[Optional[str]] = mapped_column(String(64))
     confidence_score: Mapped[Optional[float]] = mapped_column(Float)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default="CURRENT_TIMESTAMP")
 
     property: Mapped[Property] = relationship(back_populates="valuations")
 
@@ -100,5 +101,5 @@ class PropertyComp(BaseModel):
     distance_miles: Mapped[Optional[float]] = mapped_column(Float)
     similarity_score: Mapped[Optional[float]] = mapped_column(Float)
     source: Mapped[Optional[str]] = mapped_column(String(120))
-
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default="CURRENT_TIMESTAMP")
     property: Mapped[Property] = relationship(back_populates="comps")
