@@ -55,7 +55,7 @@ services:
       - backend
 
   postgres:
-    image: postgres:16-alpine
+    image: ankane/pgvector:latest
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}

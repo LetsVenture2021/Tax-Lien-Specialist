@@ -70,6 +70,8 @@ Refer to `docs/tax_lien_strategist_readme.md` for the original concept brief and
 
 3. The API is available at `http://localhost:8000`, and the web client runs at `http://localhost:5173`.
 
+Docker now provisions PostgreSQL via the `ankane/pgvector` image so the `vector` extension is available out of the box.
+
 ### Running Services Without Docker
 
 Backend (requires Poetry):
@@ -91,6 +93,14 @@ npm run dev
 ### Tests
 
 Automated test scaffolding will live under `tests/`. Pytest and frontend testing tools are already listed in the respective dependency manifests and will be wired in future iterations.
+
+For a quick migration smoke test (ensuring the latest Alembic revision can downgrade and reapply), run:
+
+```bash
+DATABASE_URL=postgresql+asyncpg://USER:PASS@HOST:PORT/DB scripts/migration_smoke_test.sh
+```
+
+The script expects a running PostgreSQL instance (e.g., the compose pgvector service) and will execute `alembic upgrade head`, `alembic downgrade -1`, and `alembic upgrade head` via Poetry.
 
 ## Deployment References
 
