@@ -45,5 +45,3 @@ class Lien(TimestampMixin, BaseModel):
     deal_scores: Mapped[list["DealScore"]] = relationship(back_populates="lien")
     portfolio_holdings: Mapped[list["PortfolioHolding"]] = relationship(back_populates="lien")
     documents: Mapped[list["Document"]] = relationship(back_populates="lien")
-
-```
