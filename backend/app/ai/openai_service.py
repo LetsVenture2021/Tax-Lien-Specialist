@@ -1,3 +1,4 @@
+
 """Async helpers that wrap the OpenAI SDK for application workflows."""
 
 from __future__ import annotations
@@ -49,6 +50,7 @@ class OpenAIService:
                     response_data["usage"] = usage_obj.model_dump()
                 elif isinstance(usage_obj, dict):
                     response_data["usage"] = usage_obj
+
         text = self._extract_text(response_data)
         if not text:
             raise RuntimeError("OpenAI response did not contain any text output.")
@@ -119,34 +121,3 @@ class OpenAIService:
             if isinstance(value, int):
                 normalised[key] = value
         return normalised or None
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
