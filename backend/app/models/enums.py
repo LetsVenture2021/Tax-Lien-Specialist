@@ -135,5 +135,3 @@ class NotificationType(str, Enum):
     WORKFLOW = "workflow"
     PORTFOLIO = "portfolio"
     ALERT = "alert"
-
-```
