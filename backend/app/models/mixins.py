@@ -29,5 +29,3 @@ class BaseModel(Base):
     __abstract__ = True
 
     id: Mapped[PyUUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
-
-```}
