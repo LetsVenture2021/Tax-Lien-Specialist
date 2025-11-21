@@ -51,5 +51,3 @@ class InvestorProfile(TimestampMixin, BaseModel):
     portfolios: Mapped[list["Portfolio"]] = relationship(back_populates="investor_profile")
     analysis_runs: Mapped[list["AnalysisRun"]] = relationship(back_populates="investor_profile")
     deal_scores: Mapped[list["DealScore"]] = relationship(back_populates="investor_profile")
-
-```}
