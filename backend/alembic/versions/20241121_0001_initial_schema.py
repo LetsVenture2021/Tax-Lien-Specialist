@@ -43,38 +43,15 @@ INTEGRATION_STATUS = sa.Enum("success", "failed", name="integration_status")
 
 
 TIMESTAMP_DEFAULT = sa.text("CURRENT_TIMESTAMP")
-UUID_COLUMN = lambda: sa.Column(
-    "id", postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text("uuid_generate_v4()")
-)
+
+
+def UUID_COLUMN() -> sa.Column:
+    return sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text("uuid_generate_v4()"))
 
 
 def upgrade() -> None:
-    bind = op.get_bind()
     op.execute('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
     op.execute('CREATE EXTENSION IF NOT EXISTS vector;')
-
-    for enum_type in (
-        USER_ROLE,
-        STRATEGY_TYPE,
-        COUNTY_AUCTION_TYPE,
-        AUCTION_SALE_TYPE,
-        PROPERTY_TYPE,
-        LIEN_TYPE,
-        INTEREST_TYPE,
-        LIEN_STATUS,
-        ANALYSIS_TYPE,
-        ANALYSIS_STATUS,
-        SCENARIO_TYPE,
-        PORTFOLIO_HOLDING_STATUS,
-        AGENT_TYPE,
-        AGENT_TASK_STATUS,
-        AGENT_LOG_TYPE,
-        DOCUMENT_TYPE,
-        NOTIFICATION_TYPE,
-        INTEGRATION_SOURCE,
-        INTEGRATION_STATUS,
-    ):
-        enum_type.create(bind, checkfirst=True)
 
     op.create_table(
         "users",
@@ -408,25 +385,28 @@ def downgrade() -> None:
     ):
         op.drop_table(table)
 
-    for enum_type in (
-        INTEGRATION_STATUS,
-        INTEGRATION_SOURCE,
-        NOTIFICATION_TYPE,
-        DOCUMENT_TYPE,
-        AGENT_LOG_TYPE,
-        AGENT_TASK_STATUS,
-        AGENT_TYPE,
-        PORTFOLIO_HOLDING_STATUS,
-        SCENARIO_TYPE,
-        ANALYSIS_STATUS,
-        ANALYSIS_TYPE,
-        LIEN_STATUS,
-        INTEREST_TYPE,
-        LIEN_TYPE,
-        PROPERTY_TYPE,
-        AUCTION_SALE_TYPE,
-        COUNTY_AUCTION_TYPE,
-        STRATEGY_TYPE,
-        USER_ROLE,
-    ):
-        enum_type.drop(op.get_bind(), checkfirst=True)
+    enum_drop_order = (
+        ("integration_status", INTEGRATION_STATUS.enums),
+        ("integration_source", INTEGRATION_SOURCE.enums),
+        ("notification_type", NOTIFICATION_TYPE.enums),
+        ("document_type", DOCUMENT_TYPE.enums),
+        ("agent_log_type", AGENT_LOG_TYPE.enums),
+        ("agent_task_status", AGENT_TASK_STATUS.enums),
+        ("agent_type", AGENT_TYPE.enums),
+        ("portfolio_holding_status", PORTFOLIO_HOLDING_STATUS.enums),
+        ("scenario_type", SCENARIO_TYPE.enums),
+        ("analysis_status", ANALYSIS_STATUS.enums),
+        ("analysis_type", ANALYSIS_TYPE.enums),
+        ("lien_status", LIEN_STATUS.enums),
+        ("interest_type", INTEREST_TYPE.enums),
+        ("lien_type", LIEN_TYPE.enums),
+        ("property_type", PROPERTY_TYPE.enums),
+        ("auction_sale_type", AUCTION_SALE_TYPE.enums),
+        ("county_auction_type", COUNTY_AUCTION_TYPE.enums),
+        ("strategy_type", STRATEGY_TYPE.enums),
+        ("user_role", USER_ROLE.enums),
+    )
+
+    bind = op.get_bind()
+    for name, values in enum_drop_order:
+        postgresql.ENUM(*values, name=name, create_type=False).drop(bind, checkfirst=True)
