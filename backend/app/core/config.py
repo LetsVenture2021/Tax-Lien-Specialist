@@ -27,7 +27,7 @@ class Settings(BaseSettings):
 
     OPENAI_API_KEY: str | None = None
     OPENAI_MODEL_NAME: str = "gpt-5.1"
-    OPENAI_EMBEDDING_MODEL: str = "text-embedding-3-small"
+    OPENAI_EMBEDDING_MODEL: str = "text-embedding-3-large"
     HUGGINGFACE_API_KEY: str | None = None
     HUGGINGFACE_EMBEDDING_MODEL: str | None = None
 
