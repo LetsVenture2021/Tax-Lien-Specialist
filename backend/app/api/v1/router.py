@@ -2,8 +2,11 @@
 
 from fastapi import APIRouter
 
+from app.api.v1 import ai
+
 
 router = APIRouter()
+router.include_router(ai.router)
 
-# TODO: include domain routers (auth, investors, properties, liens, analysis, portfolios, documents,
+# Pending: include domain routers (auth, investors, properties, liens, analysis, portfolios, documents,
 # notifications, agents, reasoning explorer) once implemented.
