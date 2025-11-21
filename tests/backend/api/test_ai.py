@@ -81,7 +81,7 @@ def test_create_text_response_success() -> None:
 
     with client_with_service(override_service) as client:
         response = client.post(
-            "/api/ai/responses",
+            "/api/v1/ai/responses",
             json={"prompt": "Hi", "model": "custom", "temperature": 0.3, "max_output_tokens": 100},
         )
 
@@ -96,7 +96,7 @@ def test_create_text_response_value_error_translates_to_422() -> None:
     override_service = RaisingOpenAIService(exc=ValueError("bad prompt"))
 
     with client_with_service(override_service) as client:
-        response = client.post("/api/ai/responses", json={"prompt": "Hi"})
+        response = client.post("/api/v1/ai/responses", json={"prompt": "Hi"})
 
     assert response.status_code == 422
     assert response.json()["detail"] == "bad prompt"
@@ -106,7 +106,7 @@ def test_create_text_response_runtime_error_translates_to_502() -> None:
     override_service = RaisingOpenAIService(exc=RuntimeError("openai failure"))
 
     with client_with_service(override_service) as client:
-        response = client.post("/api/ai/responses", json={"prompt": "Hi"})
+        response = client.post("/api/v1/ai/responses", json={"prompt": "Hi"})
 
     assert response.status_code == 502
     assert response.json()["detail"] == "openai failure"
@@ -116,7 +116,7 @@ def test_create_text_response_openai_error_translates_to_generic_502() -> None:
     override_service = RaisingOpenAIService(exc=OpenAIError("api error"))
 
     with client_with_service(override_service) as client:
-        response = client.post("/api/ai/responses", json={"prompt": "Hi"})
+        response = client.post("/api/v1/ai/responses", json={"prompt": "Hi"})
 
     assert response.status_code == 502
     assert response.json()["detail"] == "OpenAI request failed."
@@ -132,7 +132,7 @@ def test_create_embeddings_success() -> None:
     )
 
     with client_with_service(override_service) as client:
-        response = client.post("/api/ai/embeddings", json={"texts": ["alpha", "beta"]})
+        response = client.post("/api/v1/ai/embeddings", json={"texts": ["alpha", "beta"]})
 
     assert response.status_code == 200
     payload = response.json()
@@ -145,7 +145,7 @@ def test_create_embeddings_value_error_translates_to_422() -> None:
     override_service = RaisingOpenAIService(exc=ValueError("invalid texts"))
 
     with client_with_service(override_service) as client:
-        response = client.post("/api/ai/embeddings", json={"texts": ["hello"]})
+        response = client.post("/api/v1/ai/embeddings", json={"texts": ["hello"]})
 
     assert response.status_code == 422
     assert response.json()["detail"] == "invalid texts"
@@ -155,7 +155,7 @@ def test_create_embeddings_runtime_error_translates_to_502() -> None:
     override_service = RaisingOpenAIService(exc=RuntimeError("downstream error"))
 
     with client_with_service(override_service) as client:
-        response = client.post("/api/ai/embeddings", json={"texts": ["hello"]})
+        response = client.post("/api/v1/ai/embeddings", json={"texts": ["hello"]})
 
     assert response.status_code == 502
     assert response.json()["detail"] == "downstream error"
@@ -164,7 +164,7 @@ def test_create_embeddings_runtime_error_translates_to_502() -> None:
 def test_prompt_validation_error_triggers_422_before_service_call() -> None:
     # Pydantic validation should reject empty prompts before hitting the service.
     with client_with_service(StubOpenAIService()) as client:
-        response = client.post("/api/ai/responses", json={"prompt": ""})
+        response = client.post("/api/v1/ai/responses", json={"prompt": ""})
 
     assert response.status_code == 422
     assert response.json()["detail"][0]["loc"] == ["body", "prompt"]
@@ -172,7 +172,7 @@ def test_prompt_validation_error_triggers_422_before_service_call() -> None:
 
 def test_embeddings_validation_error_triggers_422_before_service_call() -> None:
     with client_with_service(StubOpenAIService()) as client:
-        response = client.post("/api/ai/embeddings", json={"texts": []})
+        response = client.post("/api/v1/ai/embeddings", json={"texts": []})
 
     assert response.status_code == 422
     assert response.json()["detail"][0]["loc"] == ["body", "texts"]
